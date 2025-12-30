@@ -1,25 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createSessionClient } from "@/lib/server/appwrite";
 
 export async function middleware(request: NextRequest) {
-  // Check if we have a session
-  try {
-    const { account } = await createSessionClient();
-    await account.get();
+  // 1. Define the cookie name
+  // We check for our custom 'session' cookie (SSR) OR the standard Appwrite cookie (CSR fallback)
+  const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+  const appwriteSessionCookie = `a_session_${projectId?.toLowerCase()}`;
 
-    // If we're here, the user is logged in.
-    // You can add logic to redirect *away* from auth pages if desired, e.g.:
-    // if (request.nextUrl.pathname.startsWith('/auth')) {
-    //   return NextResponse.redirect(new URL('/dashboard', request.url));
-    // }
-  } catch (error) {
-    // Not logged in
-    // If trying to access protected routes, redirect to login
-    // Example:
-    // if (request.nextUrl.pathname.startsWith('/dashboard')) {
-    //   return NextResponse.redirect(new URL('/auth', request.url));
-    // }
+  const session =
+    request.cookies.get("session") ||
+    request.cookies.get(appwriteSessionCookie);
+
+  // 2. Define protected routes (migrated from proxy.ts)
+  const protectedRoutes = ["/loader", "/user", "/events"]; // Expanded based on typical usage, user had '/loader'
+  const isProtected = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // 3. Redirect logic
+  if (isProtected && !session) {
+    const loginUrl = new URL("/auth", request.url);
+    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
@@ -33,7 +35,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - auth (auth pages - we want these accessible)
+     * - auth (auth pages)
      */
     "/((?!api|_next/static|_next/image|favicon.ico|auth).*)",
   ],
