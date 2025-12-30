@@ -2,6 +2,8 @@
 import CRTMonitor from "@/components/crt/TestCRT";
 import { motion } from "framer-motion";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <motion.div
