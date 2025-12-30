@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { account, ID } from "@/lib/appwrite";
 import { z } from "zod";
+import { loginWithEmail, signUpWithEmail } from "./actions";
+import { useRouter } from "next/navigation";
 
 import GlowButton from "@/components/GlowButton";
 import ColorBends from "@/components/ColorBends";
@@ -36,6 +38,7 @@ const Page = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [signupStep, setSignupStep] = useState(1);
   const [isNITPY, setIsStudent] = useState(false);
+  const router = useRouter();
 
   // Form data
   const [formData, setFormData] = useState({
@@ -132,12 +135,13 @@ const Page = () => {
         }
 
         // Login with email
-        await account.createEmailPasswordSession({
-          email: formData.email,
-          password: formData.password,
-        });
-        console.log("Logged in successfully");
-        // Redirect or update UI
+        const result = await loginWithEmail(formData.email, formData.password);
+        if (result.success) {
+          console.log("Logged in successfully");
+          router.push("/"); // Redirect to home or dashboard
+        } else {
+          throw new Error(result.error);
+        }
       } else {
         if (signupStep === 1) {
           // Validate step 1
@@ -153,22 +157,36 @@ const Page = () => {
           }
 
           // Complete signup
-          const user = await account.create({
-            userId: ID.unique(),
-            email: formData.email,
-            password: formData.password,
-          });
+          const signupResult = await signUpWithEmail(
+            formData.email,
+            formData.password,
+            `${formData.firstName} ${formData.lastName}`
+          );
 
-          // Store additional user data (you might want to use Appwrite Database for this)
-          console.log("User created:", user);
-          console.log("Additional data:", {
-            phone: formData.phone,
-            gender: formData.gender,
-            collegeName: formData.collegeName,
-            isNITPY,
-          });
+          if (!signupResult.success) {
+            throw new Error(signupResult.error);
+          }
 
-          // Redirect or update UI
+          // Auto login after signup
+          const loginResult = await loginWithEmail(
+            formData.email,
+            formData.password
+          );
+          if (loginResult.success) {
+            console.log("User created and logged in");
+            // Store additional user data (logic moved or preserved if needed, but simple console log here)
+            console.log("Additional data:", {
+              phone: formData.phone,
+              gender: formData.gender,
+              collegeName: formData.collegeName,
+              isNITPY,
+            });
+            router.push("/");
+          } else {
+            throw new Error(
+              "Signup successful but login failed: " + loginResult.error
+            );
+          }
         }
       }
     } catch (error) {
@@ -185,7 +203,7 @@ const Page = () => {
         // OAuth for login or step 1 signup
         account.createOAuth2Session(
           provider as any,
-          `${window.location.origin}/auth/success`,
+          `${window.location.origin}/api/oauth`,
           `${window.location.origin}/auth/failure`
         );
       } else {
@@ -207,7 +225,7 @@ const Page = () => {
 
         account.createOAuth2Session(
           provider as any,
-          `${window.location.origin}/auth/success`,
+          `${window.location.origin}/api/oauth`,
           `${window.location.origin}/auth/failure`
         );
       }
