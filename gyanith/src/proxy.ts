@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // 1. Define the cookie name
   // We check for our custom 'session' cookie (SSR) OR the standard Appwrite cookie (CSR fallback)
   const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
@@ -11,8 +11,8 @@ export async function middleware(request: NextRequest) {
     request.cookies.get("session") ||
     request.cookies.get(appwriteSessionCookie);
 
-  // 2. Define protected routes (migrated from proxy.ts)
-  const protectedRoutes = ["/loader", "/user", "/events"]; // Expanded based on typical usage, user had '/loader'
+  // 2. Define protected routes
+  const protectedRoutes = ["/loader", "/user", "/events"];
   const isProtected = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
