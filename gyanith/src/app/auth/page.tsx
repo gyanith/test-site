@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { account, ID } from "@/lib/appwrite";
+import { account, ID } from "@/lib/appwrite.client";
 import { z } from "zod";
 
 import GlowButton from "@/components/GlowButton";
