@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   output: "standalone",
   compiler: {
     styledJsx: true,
@@ -15,8 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-
-  allowedDevOrigins: ["*"],
 };
 
 export default nextConfig;
