@@ -4,10 +4,10 @@ import FloatingLines from "@/components/FloatingLines";
 import Image from "next/image";
 import searchIcon from "@/assets/searchIcon.svg";
 
-async function getTechEvents() {
+/* async function getTechEvents() {
   const techEvents = await fetch("/api/v1/events?type=TECH");
   return techEvents;
-}
+} */
 
 function page() {
   return (
