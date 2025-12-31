@@ -15,7 +15,7 @@ async function getTechEvents() {
 }
 
 function page() {
-  console.log(getTechEvents());
+  // console.log(getTechEvents());
   return (
     <div>
       <div className="text-white relative font-5xl w-screen h-[33vh] md:h-[50vh] lg:h-[66vh] overflow-clip flex items-end transition-all duration-300 ease-in-out">

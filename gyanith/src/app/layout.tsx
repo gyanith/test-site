@@ -3,9 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Noise from "@/components/Noise";
 
-import Navbar from "@/components/navbar/Navbar";
 import { LoaderProvider, useLoader } from "@/components/LoaderContext";
 import { Montserrat, Inter } from "next/font/google";
+
+export const dynamic = "force-dynamic";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
