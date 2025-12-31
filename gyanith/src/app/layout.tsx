@@ -6,7 +6,7 @@ import Noise from "@/components/Noise";
 import { LoaderProvider, useLoader } from "@/components/LoaderContext";
 import { Montserrat, Inter } from "next/font/google";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
