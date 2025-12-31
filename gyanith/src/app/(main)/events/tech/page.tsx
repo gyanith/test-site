@@ -4,12 +4,18 @@ import FloatingLines from "@/components/FloatingLines";
 import Image from "next/image";
 import searchIcon from "@/assets/searchIcon.svg";
 
-/* async function getTechEvents() {
-  const techEvents = await fetch("/api/v1/events?type=TECH");
+async function getTechEvents() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/events?type=TECH`,
+    { cache: "no-store" }
+  );
+
+  const techEvents = await res.json();
   return techEvents;
-} */
+}
 
 function page() {
+  console.log(getTechEvents());
   return (
     <div>
       <div className="text-white relative font-5xl w-screen h-[33vh] md:h-[50vh] lg:h-[66vh] overflow-clip flex items-end transition-all duration-300 ease-in-out">
